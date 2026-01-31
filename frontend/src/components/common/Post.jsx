@@ -308,30 +308,36 @@ import { FaTrash } from "react-icons/fa";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import LoadingSpinner from "./LoadingSpinner";
-
+import usePostsStore from "../../store/posts.store";
+import useAuthStore from "../../store/auth.store";
 
 const Post = ({ post }) => {
   const [comment, setComment] = useState("");
-  
+  const {authUser}=useAuthStore();
+  if(!authUser || !post) return null;
+
+  const isLiked = post.likes?.some(
+    (id)=>id?.toString()===authUser._id
+  );
   const postOwner = post.user;
-  const isLiked = false;
   const isMyPost = true;
   const formattedDate = "1h";
   const isCommenting = false;
-  const isDeleting = false;
-  const isLiking = false;
+  const { deletePost, isDeleting, likeOnPost , isLiking,commentOnPost} = usePostsStore(); 
 
   const handleDeletePost = () => {
-    
+    deletePost(post._id);
   };
 
   const handlePostComment = (e) => {
     e.preventDefault();
+    commentOnPost( post._id, comment);
+    setComment("");
     
   };
 
   const handleLikePost = () => {
-    
+    likeOnPost(post._id);
   };
 
   return (
@@ -348,7 +354,7 @@ const Post = ({ post }) => {
         <div className="flex flex-col flex-1">
           <div className="flex gap-2 items-center">
             <Link to={`/profile/${postOwner.username}`} className="font-bold">
-              {postOwner.fullName}
+              {postOwner.fullname}
             </Link>
             <span className="text-gray-700 flex gap-1 text-sm">
               <Link to={`/profile/${postOwner.username}`}>

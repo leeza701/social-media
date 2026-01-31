@@ -12,7 +12,7 @@ export const createPost=async(req,res)=>{
          if(!user){
              return res.status(404).json({message:"User not found"});
          }
-        if(!text&&!img){
+        if(text==="" && img===null){
             return res.status(400).json({message:"Post cannot be empty"});
         }
         if(img){
@@ -52,7 +52,7 @@ export const deletePost=async(req,res)=>{
     }
 }
 
-export const commentPost=async(req,res)=>{
+export const commentOnPost=async(req,res)=>{
     try {
         const {text}=req.body;
         const postId=req.params.id;
@@ -77,43 +77,80 @@ export const commentPost=async(req,res)=>{
     }
 }
 
-export const likeUnlikePost=async(req,res)=>{
-    try {
-        const userId=req.user._id;
-        const {id:postId}=req.params;
+// export const likeUnlikePost=async(req,res)=>{
+//     try {
+//         const userId=req.user._id;
+//         const {id:postId}=req.params;
 
-        const post=await Post.findById(postId);
+//         const post=await Post.findById(postId);
 
-        if(!post){
-            return res.status(404).json({error:"post not found"});
-        }
+//         if(!post){
+//             return res.status(404).json({error:"post not found"});
+//         }
 
-        const userLikedPost=post.likes.includes(userId);
+//         const userLikedPost=post.likes.includes(userId);
 
-        if(userLikedPost){
-            await Post.updateOne({_id:postId},{$pull:{likes:userId}});
-            await User.updateOne({_id:userId},{$pull:{likedPosts:postId}});
-            res.status(200).json({message:"Post unliked successfully"});
-        }else{
-            post.likes.push(userId);
-            await User.updateOne({_id:userId},{$push:{likedPosts:postId}});
-            await post.save();
+//         if(userLikedPost){
+//             await Post.updateOne({_id:postId},{$pull:{likes:userId}});
+//             await User.updateOne({_id:userId},{$pull:{likedPosts:postId}});
+//             res.status(200).json({message:"Post unliked successfully"});
+//         }else{
+//             post.likes.push(userId);
+//             await User.updateOne({_id:userId},{$push:{likedPosts:postId}});
+//             await post.save();
 
-            const notification=new Notification({
-                from:userId,
-                to:post.user,
-                type:"like",
+//             const notification=new Notification({
+//                 from:userId,
+//                 to:post.user,
+//                 type:"like",
 
-            });
-            await notification.save();
+//             });
+//             await notification.save();
 
-            res.status(200).json({message:"Post liked successfully"});
-        }
-    } catch (error) {
-        console.log("Error in likeUnlikePost controller:", error);
-        res.status(500).json({message:"internal server error"});
+//             res.status(200).json({message:"Post liked successfully"});
+//         }
+//     } catch (error) {
+//         console.log("Error in likeUnlikePost controller:", error);
+//         res.status(500).json({message:"internal server error"});
+//     }
+// }
+  
+export const likeOnPost = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { id: postId } = req.params;
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
     }
-}
+
+    const isLiked = post.likes.some(
+      (id) => id.toString() === userId.toString()
+    );
+
+    if (isLiked) {
+      await Post.updateOne(
+        { _id: postId },
+        { $pull: { likes: userId } }
+      );
+    } else {
+      await Post.updateOne(
+        { _id: postId },
+        { $addToSet: { likes: userId } }
+      );
+    }
+
+    const updatedPost = await Post.findById(postId)
+      .populate("user", "-password")
+      .populate("comments.user", "-password");
+
+    return res.status(200).json({ post: updatedPost });
+  } catch (error) {
+    console.log("Error in likeOnPost:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 
 export const getAllPosts=async(req,res)=>{

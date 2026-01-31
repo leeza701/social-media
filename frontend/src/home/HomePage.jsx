@@ -3,10 +3,16 @@ import { useState } from "react";
 import Posts from "../components/common/Posts.jsx";
 import CreatePost from  "./CreatePost.jsx";
 
-
+import usePostsStore from "../store/posts.store.js";
+import { useEffect } from "react";
 
 const HomePage = () => {
 	const [feedType, setFeedType] = useState("forYou");
+	const { posts, fetchPosts, isLoading } = usePostsStore();
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
 	return (
 		<>
@@ -38,7 +44,7 @@ const HomePage = () => {
 				{/*  CREATE POST INPUT */}
 				<CreatePost />
 				{/* POSTS */}
-				<Posts feedType={feedType} />
+				<Posts posts={posts} feedType={feedType} isLoading={isLoading} />
 			</div>
 		</>
 	);

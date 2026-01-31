@@ -271,7 +271,7 @@ import PostSkeleton from "../skeletons/PostSkeleton";
 // import { useEffect } from "react";
 import {POSTS} from "../../utils/db/dummy.js";
 
-const Posts = () => {
+const Posts = ({posts,isLoading}) => {
 	// const getPostEndpoint = () => {
 	// 	switch (feedType) {
 	// 		case "forYou":
@@ -314,23 +314,22 @@ const Posts = () => {
 
 	// useEffect(() => {
 	// 	refetch();
-	// }, [feedType, refetch, username]);
- const isLoading=false;
+	// }, [feedType, refetch]);
 	return (
 		<>
-			{(isLoading) && (
+			{isLoading && (
 				<div className='flex flex-col justify-center'>
 					<PostSkeleton />
 					<PostSkeleton />
 					<PostSkeleton />
 				</div>
 			)}
-			{!isLoading && POSTS?.length === 0 && (
+			{!isLoading && posts?.length === 0 && (
 				<p className='text-center my-4'>No posts in this tab. Switch 👻</p>
 			)}
-			{!isLoading && POSTS && (
+			{!isLoading && posts && (
 				<div>
-					{POSTS.map((post) => (
+					{posts.map((post) => (
 						<Post key={post._id} post={post} />
 					))}
 				</div>

@@ -1,181 +1,217 @@
-import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useRef, useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import Posts from "../../components/common/Posts";
-import {POSTS} from "../../utils/db/dummy.js"
+import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton.jsx";
+import EditProfileModal from "./EditProfileModal.jsx"
+import usePostsStore from "../../store/posts.store.js";
+import useAuthStore from "../../store/auth.store.js";
 
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 
-// ✅ Dummy user data
-const USER = {
-	_id: "1",
-	fullname: "leeza",
-	username: "leeza",
-	bio: "Full Stack Developer | MERN",
-	profileImg: "/avatar-placeholder.png",
-	coverImg: "/cover.png",
-	link: "https://github.com/leeza",
-	followers: [1, 2, 3],
-	following: [1, 2],
-	createdAt: "2023-01-01",
-};
-
 const ProfilePage = () => {
-	const [coverImg, setCoverImg] = useState(null);
-	const [profileImg, setProfileImg] = useState(null);
-	const [feedType, setFeedType] = useState("posts");
+  const { authUser, isLoading } = useAuthStore();
+  const { posts, createPost, isPending } = usePostsStore();
+  const navigate = useNavigate();
 
-	const coverImgRef = useRef(null);
-	const profileImgRef = useRef(null);
+  const [coverImg, setCoverImg] = useState(null);
+  const [profileImg, setProfileImg] = useState(null);
+  const [feedType, setFeedType] = useState("posts");
 
-	const isLoading = false;
-	const isMyProfile = true;
+  const [text, setText] = useState("");
+  const [img, setImg] = useState(null);
 
-	const handleImgChange = (e, type) => {
-		const file = e.target.files[0];
-		if (!file) return;
+  const coverImgRef = useRef(null);
+  const profileImgRef = useRef(null);
+  const imgRef = useRef(null);
+   
 
-		const reader = new FileReader();
-		reader.onload = () => {
-			if (type === "cover") setCoverImg(reader.result);
-			if (type === "profile") setProfileImg(reader.result);
-		};
-		reader.readAsDataURL(file);
-	};
+  useEffect(() => {
+    if (!isLoading && !authUser) {
+      navigate("/login");
+    }
+  }, [isLoading, authUser, navigate]);
 
-	return (
-		<div className="flex-[4_4_0] border-r border-gray-700 min-h-screen">
-			{!isLoading && (
-				<>
-					{/* TOP HEADER */}
-					<div className="flex gap-8 px-4 py-2 items-center">
-						<Link to="/">
-							<FaArrowLeft />
-						</Link>
-						<div>
-							<p className="font-bold text-lg">{USER.fullname}</p>
-							<span className="text-sm text-slate-500">
-								{POSTS.length} posts
-							</span>
-						</div>
-					</div>
+  if (isLoading || !authUser) {
+    return <ProfileHeaderSkeleton />;
+  }
 
-					{/* COVER IMAGE */}
-					<div className="relative">
-						<img
-							src={coverImg || USER.coverImg}
-							className="h-52 w-full object-cover"
-							alt="cover"
-						/>
+  const isMyProfile = true;
 
-						{isMyProfile && (
-							<button
-								className="absolute top-2 right-2 bg-gray-800 bg-opacity-80 p-2 rounded-full"
-								onClick={() => coverImgRef.current.click()}
-							>
-								<MdEdit className="text-white" />
-							</button>
-						)}
+  const handleImgChange = (e, type) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-						<input
-							type="file"
-							hidden
-							ref={coverImgRef}
-							accept="image/*"
-							onChange={(e) => handleImgChange(e, "cover")}
-						/>
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (type === "cover") setCoverImg(reader.result);
+      if (type === "profile") setProfileImg(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
 
-						{/* PROFILE IMAGE */}
-						<div className="absolute -bottom-16 left-4">
-							<div className="relative">
-								<img
-									src={profileImg || USER.profileImg}
-									className="w-32 h-32 rounded-full border-4 border-gray-900 object-cover"
-									alt="avatar"
-								/>
-								{isMyProfile && (
-									<MdEdit
-										className="absolute bottom-1 right-1 bg-primary p-1 rounded-full text-white cursor-pointer"
-										onClick={() => profileImgRef.current.click()}
-									/>
-								)}
-							</div>
+  const handlePostImage = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-							<input
-								type="file"
-								hidden
-								ref={profileImgRef}
-								accept="image/*"
-								onChange={(e) => handleImgChange(e, "profile")}
-							/>
-						</div>
-					</div>
+    const reader = new FileReader();
+    reader.onload = () => setImg(reader.result);
+    reader.readAsDataURL(file);
+  };
 
-					{/* USER INFO (IMPORTANT FIX HERE) */}
-					<div className="px-4 pt-20">
-						<p className="font-bold text-lg">{USER.fullname}</p>
-						<p className="text-slate-500">@{USER.username}</p>
-						<p className="my-2">{USER.bio}</p>
+  const handleCreatePost = async () => {
+    if (!text && !img) return;
 
-						<div className="flex gap-4 text-sm text-slate-500">
-							<a
-								href={USER.link}
-								target="_blank"
-								rel="noreferrer"
-								className="flex items-center gap-1 hover:underline"
-							>
-								<FaLink /> Website
-							</a>
-							<div className="flex items-center gap-1">
-								<IoCalendarOutline /> Joined 2023
-							</div>
-						</div>
+    await createPost({ text, img });
 
-						<div className="flex gap-6 mt-2">
-							<span>
-								<b>{USER.following.length}</b>{" "}
-								<span className="text-slate-500">Following</span>
-							</span>
-							<span>
-								<b>{USER.followers.length}</b>{" "}
-								<span className="text-slate-500">Followers</span>
-							</span>
-						</div>
-					</div>
+    setText("");
+    setImg(null);
+  };
 
-					{/* FEED TABS */}
-					<div className="flex border-b border-gray-700 mt-4">
-						<button
-							className={`flex-1 p-3 ${
-								feedType === "posts"
-									? "border-b-4 border-primary font-semibold"
-									: "text-slate-500"
-							}`}
-							onClick={() => setFeedType("posts")}
-						>
-							Posts
-						</button>
-						<button
-							className={`flex-1 p-3 ${
-								feedType === "likes"
-									? "border-b-4 border-primary font-semibold"
-									: "text-slate-500"
-							}`}
-							onClick={() => setFeedType("likes")}
-						>
-							Likes
-						</button>
-					</div>
+  return (
+    <div className="flex-[4_4_0] border-r border-gray-700 min-h-screen">
+      <div className="flex gap-10 px-4 py-2 items-center">
+        <Link to="/">
+          <FaArrowLeft />
+        </Link>
+        <div>
+          <p className="font-bold">{authUser.fullname}</p>
+          <span className="text-sm text-slate-500">{posts.length} posts</span>
+        </div>
+      </div>
+      <div className="relative group">
+        <img
+          src={coverImg || authUser.coverImg || "/cover.png"}
+          className="h-52 w-full object-cover"
+        />
 
-					{/* POSTS */}
-					<Posts feedType={feedType} username={USER.username} />
-				</>
-			)}
-		</div>
-	);
+        {isMyProfile && (
+          <button
+            className="absolute top-2 right-2 bg-gray-800 p-2 rounded-full"
+            onClick={() => coverImgRef.current.click()}
+          >
+            <MdEdit />
+          </button>
+        )}
+
+        <input
+          type="file"
+          hidden
+          ref={coverImgRef}
+          onChange={(e) => handleImgChange(e, "cover")}
+        />
+        <div className="absolute -bottom-16 left-4">
+          <img
+            src={profileImg || authUser.profileImg || "/avatar-placeholder.png"}
+            className="w-32 rounded-full border-4 border-black"
+          />
+          {isMyProfile && (
+            <MdEdit
+              className="absolute bottom-2 right-2 cursor-pointer"
+              onClick={() => profileImgRef.current.click()}
+            />
+          )}
+          <input
+            type="file"
+            hidden
+            ref={profileImgRef}
+            onChange={(e) => handleImgChange(e, "profile")}
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end px-4 mt-6">
+        <EditProfileModal authUser={authUser} />
+      </div>
+
+      <div className="px-4 mt-20">
+        <p className="font-bold">{authUser.fullname}</p>
+        <p className="text-slate-500">@{authUser.username}</p>
+        <p>{authUser.bio}</p>
+
+        <div className="flex gap-4 mt-2 text-sm text-slate-500">
+          {authUser.link && (
+            <a href={authUser.link} target="_blank">
+              <FaLink /> Website
+            </a>
+          )}
+          <div>
+            <IoCalendarOutline /> Joined{" "}
+            {new Date(authUser.createdAt).getFullYear()}
+          </div>
+        </div>
+
+        <div className="flex gap-4 mt-2">
+          <span>
+            <b>{authUser.following.length}</b> Following
+          </span>
+          <span>
+            <b>{authUser.followers.length}</b> Followers
+          </span>
+        </div>
+      </div>
+      <div className="px-4 mt-6">
+        <textarea
+          className="textarea textarea-bordered w-full"
+          placeholder="What's happening?"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+
+        {img && (
+          <div className="relative mt-2">
+            <img src={img} className="rounded-lg max-h-60" />
+            <button
+              className="absolute top-1 right-1 btn btn-xs btn-circle"
+              onClick={() => setImg(null)}
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        <div className="flex justify-between mt-2">
+          <input type="file" hidden ref={imgRef} onChange={handlePostImage} />
+          <button
+            className="btn btn-sm btn-outline"
+            onClick={() => imgRef.current.click()}
+          >
+            Image
+          </button>
+
+          <button
+            className="btn btn-primary btn-sm rounded-full"
+            disabled={isPending}
+            onClick={handleCreatePost}
+          >
+            {isPending ? "Posting..." : "Post"}
+          </button>
+        </div>
+      </div>
+      <div className="flex border-b border-gray-700 mt-4">
+        <button
+          className={`flex-1 p-3 ${
+            feedType === "posts" && "border-b-4 border-primary"
+          }`}
+          onClick={() => setFeedType("posts")}
+        >
+          Posts
+        </button>
+        <button
+          className={`flex-1 p-3 ${
+            feedType === "likes" && "border-b-4 border-primary"
+          }`}
+          onClick={() => setFeedType("likes")}
+        >
+          Likes
+        </button>
+      </div>
+      <Posts feedType={feedType} username={authUser.username} posts={posts} />
+    </div>
+  );
 };
 
 export default ProfilePage;
