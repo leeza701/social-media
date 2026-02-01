@@ -3,28 +3,32 @@ import LoadingSpinner from "../../components/common/LoadingSpinner";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa6";
-
+import useUserStore from "../../store/user.store.js";
+import { useEffect } from "react";
 const NotificationPage = () => {
-    const isLoading = false;
-    const notifications = [
-        {
-            _id: "1",
-            type: "follow",
-            from: {
-                username: "john_doe",
-                profileImg: "/avtar/boy1.png",
-            },
-        },
-        {
-            _id: "2",
-            type: "like",
-            from: {
-                username: "jane_doe",
-                profileImg: "/avtar/boy2.png",
-            },
-        },
-    ];
-
+    // const isLoading = false;
+    // const notifications = [
+    //     {
+    //         _id: "1",
+    //         type: "follow",
+    //         from: {
+    //             username: "john_doe",
+    //             profileImg: "/avtar/boy1.png",
+    //         },
+    //     },
+    //     {
+    //         _id: "2",
+    //         type: "like",
+    //         from: {
+    //             username: "jane_doe",
+    //             profileImg: "/avtar/boy2.png",
+    //         },
+    //     },
+    // ];
+	const {isLoading,notifications,fetchNotifications} = useUserStore();
+    useEffect(()=>{
+		fetchNotifications();
+	},[fetchNotifications]);
 	return (
 		<>
 			<div className='flex-[4_4_0] border-l border-r border-gray-700 min-h-screen'>

@@ -28,7 +28,6 @@ const ProfilePage = () => {
   const profileImgRef = useRef(null);
   const imgRef = useRef(null);
    
-
   useEffect(() => {
     if (!isLoading && !authUser) {
       navigate("/login");

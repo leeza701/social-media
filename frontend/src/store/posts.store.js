@@ -84,7 +84,7 @@ const usePostsStore = create((set) => ({
         const res=await axiosInstance.get("/post");
         set({posts:res.data,isLoading:false});
     } catch (error) {
-        set({error:error.message,isLoading:false});
+        set({isLoading:false});
     }
   },
 
@@ -163,6 +163,26 @@ commentOnPost: async (postId, text) => {
     toast.error("Failed to add comment");
   }
 },
+
+fetchLikedPosts:async()=>{
+    set({isLoading:true});
+    try {
+        const res=await axiosInstance.get("/post/likes");
+        set({posts:res.data,isLoading:false});
+    } catch (error) {
+        set({isLoading:false});
+    }
+  },
+
+  fetchFollowingPosts:async()=>{
+    set({isLoading:true});    
+    try {
+        const res=await axiosInstance.get("/post/following");
+        set({posts:res.data,isLoading:false});
+    } catch (error) {
+        set({isLoading:false});
+    }
+  }
 
 }));
 

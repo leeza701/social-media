@@ -30,7 +30,30 @@ const useUserStore=create((set)=>({
         set({error:error.message,isFollowLoading:false});
         console.log("Error in followUnFollowUser:", error);
     }
+   },
+
+   fetchNotifications:async()=>{
+    set({isLoading:true});
+    try {
+        const res=await axiosInstance.get("/notification");
+        set({notifications:res.data,isLoading:false});
+    } catch (error) {
+        set({error:error.message,isLoading:false});
+    }
+   },
+
+   getLikedPosts:async(postId)=>{
+    try {
+        set({isLoading:true});
+        const res=await axiosInstance.get(`/post/likes/${postId}`);
+        set({likedPosts:res.data,isLoading:false});
+    } catch (error) {
+        set({error:error.message,isLoading:false});
+    }
    }
+
+
+
 
 }));
 

@@ -8,7 +8,15 @@ import { useEffect } from "react";
 
 const HomePage = () => {
 	const [feedType, setFeedType] = useState("forYou");
-	const { posts, fetchPosts, isLoading } = usePostsStore();
+	const { posts, fetchPosts, isLoading, fetchFollowingPosts } = usePostsStore();
+
+    useEffect(()=>{
+		if(feedType==="following"){
+			fetchFollowingPosts();
+		}else{
+			fetchPosts();
+		}
+	}, [feedType]);
 
   useEffect(() => {
     fetchPosts();

@@ -6,7 +6,7 @@ const router=express.Router();
 
 router.get("/",protectRoute,getAllPosts);
 router.get("/following",protectRoute,getFollowingPosts);
-router.get("/likes/:id",protectRoute,getLikedPosts);
+router.get("/likes",protectRoute,getLikedPosts);
 router.get("/user/:username",protectRoute,getUserPosts);
 router.post("/create",protectRoute,createPost);
  router.delete("/delete/:id",protectRoute,deletePost);
