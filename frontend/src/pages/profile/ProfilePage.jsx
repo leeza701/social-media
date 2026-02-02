@@ -227,7 +227,7 @@ import { MdEdit } from "react-icons/md";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { username } = useParams();
+  const { username } = userParams();
 
   const { followUnfollowUser, isFollowLoading } = useUserStore();
   const { fetchUserPosts , fetchLikedPosts} = usePostsStore();
