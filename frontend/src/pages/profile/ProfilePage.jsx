@@ -230,6 +230,7 @@ const ProfilePage = () => {
   const { username } = useParams();
 
   const { followUnfollowUser, isFollowLoading } = useUserStore();
+  const { fetchUserPosts , fetchLikedPosts} = usePostsStore();
 
   const {
     authUser,
@@ -240,7 +241,7 @@ const ProfilePage = () => {
     profileLoading,
   } = useAuthStore();
 
-  const { posts, fetchUserPosts, fetchLikedPosts } = usePostsStore();
+  const { posts } = usePostsStore();
 
   const isMyProfile = authUser?.username === username;
   const user = isMyProfile ? authUser : profileUser;
@@ -262,6 +263,14 @@ const ProfilePage = () => {
   useEffect(() => {
     if (!isMyProfile && username) fetchProfileUser(username);
   }, [username, isMyProfile, fetchProfileUser]);
+
+
+  useEffect(() => {
+    if (!username) return;
+    feedType === "posts"
+      ? fetchUserPosts(username)
+      : fetchLikedPosts(username);
+  }, [feedType, username]);
 
 
   if (authLoading || profileLoading) return <ProfileHeaderSkeleton />;

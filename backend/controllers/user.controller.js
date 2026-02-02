@@ -66,7 +66,7 @@ export const getSuggestedUsers=async(req,res)=>{
         const filterdUsers=users.filter(user=>!usersFollowedByMe.following.includes(user._id))
         const suggestedUsers=filterdUsers.slice(0,4)
 
-        suggestedUsers.forEach(uesr=>users.password=null)
+        suggestedUsers.forEach(user=>user.password=null)
 
         res.status(200).json(suggestedUsers)
     } catch (error) {
@@ -112,6 +112,7 @@ export const updateUser = async (req, res) => {
             coverImg = uploadedResponse.secure_url;
         }
         user.fullname = fullname || user.fullname;
+        user.username = username || user.username;
         user.email = email || user.email;
         user.bio = bio || user.bio;
         user.link = link || user.link;
