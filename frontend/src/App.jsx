@@ -34,7 +34,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import SignupPage from "./pages/SignupPage.jsx";
 import HomePage from "./home/HomePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
-import Sidebar from "./components/common/SideBar.jsx";
 import RightPanel from "./components/common/RightPanel.jsx";
 import NotificationPage from "./pages/notification/NotificationPage.jsx";
 import ProfilePage from "./pages/profile/ProfilePage.jsx";
