@@ -1,12 +1,13 @@
 import {create} from 'zustand';
 import axiosInstance from '../config/axios.js';
-
+import toast from 'react-hot-toast';
 const useUserStore=create((set)=>({
    user:null,
    isLoading:true,
    isFollowLoading:false,
    error:null,
    suggestedUser:[],
+   isUpdatingProfile:false,
    fetchSuggestedUser:async() => {
     set({isLoading:true});
     try {
@@ -49,6 +50,18 @@ const useUserStore=create((set)=>({
         set({likedPosts:res.data,isLoading:false});
     } catch (error) {
         set({error:error.message,isLoading:false});
+    }
+   },
+
+   updateProfile:async(profileData)=>{
+    set({isUpdatingProfile:true,error:null});
+    try {
+        const res=await axiosInstance.post("/users/update",profileData);
+        set({user:res.data,isUpdatingProfile:false});
+        toast.success("Profile updated successfully");
+    } catch (error) {
+        set({error:error.message,isUpdatingProfile:false});
+        console.log("Error updating profile:", error);
     }
    }
 

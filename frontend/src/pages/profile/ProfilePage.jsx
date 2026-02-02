@@ -1,11 +1,224 @@
+// import { useRef, useState, useEffect } from "react";
+// import { Link, useNavigate, useParams } from "react-router-dom";
+
+// import Posts from "../../components/common/Posts";
+// import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton.jsx";
+// import EditProfileModal from "./EditProfileModal.jsx"
+
+// import usePostsStore from "../../store/posts.store.js";
+// import useAuthStore from "../../store/auth.store.js";
+// import useUserStore from "../../store/user.store.js";
+
+// import { FaArrowLeft } from "react-icons/fa6";
+// import { IoCalendarOutline } from "react-icons/io5";
+// import { FaLink } from "react-icons/fa";
+// import { MdEdit } from "react-icons/md";
+
+// const ProfilePage = () => {
+//   const navigate = useNavigate();
+//   const { username } = useParams();
+
+//   const { followUnFollowUser, isFollowLoading } = useUserStore();
+
+//   const {
+//     authUser,
+//     profileUser,
+//     fetchProfileUser,
+//     authLoading,
+//     profileLoading,
+//     updateProfileImages,
+//   } = useAuthStore();
+
+// const { posts } = usePostsStore(); 
+  
+
+//   const isMyProfile = authUser?.username === username;
+//   const user = isMyProfile ? authUser : profileUser;
+//  const isFollowing =
+//   !!user && authUser?.following?.includes(user._id);
+
+
+//   const [feedType, setFeedType] = useState("posts");
+
+//   const coverImgRef = useRef(null);
+//   const profileImgRef = useRef(null);
+
+//   useEffect(() => {
+//     if (!authLoading && !authUser) {
+//       navigate("/login");
+//     }
+//   }, [authLoading, authUser, navigate]);
+
+
+//   useEffect(() => {
+//     if (!isMyProfile && username) {
+//       fetchProfileUser(username);
+//     }
+//   }, [username, isMyProfile, fetchProfileUser]);
+
+
+//   if (authLoading || profileLoading) {
+//     return <ProfileHeaderSkeleton />;
+//   }
+
+//   if (!user) {
+//     return (
+//       <div className="text-center mt-10 text-slate-400">
+//         User not found
+//       </div>
+//     );
+//   }
+
+
+
+//   return (
+//     <div className="flex-[4_4_0] border-r border-gray-700 min-h-screen">
+//       {/* HEADER */}
+//       <div className="flex gap-10 px-4 py-2 items-center">
+//         <Link to="/">
+//           <FaArrowLeft />
+//         </Link>
+//         <div>
+//           <p className="font-bold">{user.fullname}</p>
+//           <span className="text-sm text-slate-500">
+//             {posts.length} posts
+//           </span>
+//         </div>
+//       </div>
+
+//       {/* COVER */}
+//       <div className="relative">
+//         <img
+//           src={user.coverImg || "/cover.png"}
+//           className="h-52 w-full object-cover"
+//           alt="cover"
+//         />
+
+//         {isMyProfile && (
+//           <button
+//             className="absolute top-2 right-2 bg-gray-800 p-2 rounded-full"
+//             onClick={() => coverImgRef.current.click()}
+//           >
+//             <MdEdit />
+//           </button>
+//         )}
+
+//         <input hidden ref={coverImgRef} type="file" />
+
+//         {/* PROFILE IMAGE */}
+//         <div className="absolute -bottom-16 left-4">
+//           <img
+//             src={user.profileImg || "/avatar-placeholder.png"}
+//             className="w-32 rounded-full border-4 border-black"
+//             alt="profile"
+//           />
+
+//           {isMyProfile && (
+//             <MdEdit
+//               className="absolute bottom-2 right-2 cursor-pointer"
+//               onClick={() => profileImgRef.current.click()}
+//             />
+//           )}
+
+//           <input hidden ref={profileImgRef} type="file" />
+//         </div>
+//       </div>
+
+//       {/* EDIT PROFILE */}
+//       {/* {isMyProfile && (
+//         <div className="flex justify-end px-4 mt-6">
+//           <EditProfileModal authUser={authUser} />
+//         </div>
+//       )} */}
+//       <div className="flex justify-end px-4 mt-6">
+//   {isMyProfile ? (
+//     <EditProfileModal authUser={authUser} />
+//   ) : (
+//     <button
+//       className={`btn btn-sm rounded-full ${
+//         isFollowing ? "btn-outline" : "btn-primary"
+//       }`}
+//       disabled={isFollowLoading}
+//       onClick={() => followUnFollowUser(user._id)}
+//     >
+//       {isFollowLoading
+//         ? "Please wait..."
+//         : isFollowing
+//         ? "Unfollow"
+//         : "Follow"}
+//     </button>
+//   )}
+// </div>
+
+
+//       {/* PROFILE INFO */}
+//       <div className="px-4 mt-20">
+//         <p className="font-bold">{user.fullname}</p>
+//         <p className="text-slate-500">@{user.username}</p>
+//         <p>{user.bio}</p>
+
+//         <div className="flex gap-4 mt-2 text-sm text-slate-500">
+//           {user.link && (
+//             <a href={user.link} target="_blank" rel="noreferrer">
+//               <FaLink /> Website
+//             </a>
+//           )}
+//           <div className="flex items-center gap-1">
+//             <IoCalendarOutline />
+//             Joined {new Date(user.createdAt).getFullYear()}
+//           </div>
+//         </div>
+
+//         <div className="flex gap-4 mt-2">
+//           <span>
+//             <b>{user.following.length}</b> Following
+//           </span>
+//           <span>
+//             <b>{user.followers.length}</b> Followers
+//           </span>
+//         </div>
+//       </div>
+
+//       {/* FEED TABS */}
+//       <div className="flex border-b border-gray-700 mt-4">
+//         <button
+//           className={`flex-1 p-3 ${
+//             feedType === "posts" && "border-b-4 border-primary"
+//           }`}
+//           onClick={() => setFeedType("posts")}
+//         >
+//           Posts
+//         </button>
+//         <button
+//           className={`flex-1 p-3 ${
+//             feedType === "likes" && "border-b-4 border-primary"
+//           }`}
+//           onClick={() => setFeedType("likes")}
+//         >
+//           Likes
+//         </button>
+//       </div>
+
+//       {/* POSTS */}
+//       <Posts feedType={feedType} username={username} posts={posts} />
+//     </div>
+//   );
+// };
+
+// export default ProfilePage;
+
+
+
 import { useRef, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import Posts from "../../components/common/Posts";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton.jsx";
 import EditProfileModal from "./EditProfileModal.jsx"
+
 import usePostsStore from "../../store/posts.store.js";
 import useAuthStore from "../../store/auth.store.js";
+import useUserStore from "../../store/user.store.js";
 
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
@@ -13,204 +226,203 @@ import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 
 const ProfilePage = () => {
-  const { authUser, isLoading } = useAuthStore();
-  const { posts, createPost, isPending } = usePostsStore();
   const navigate = useNavigate();
+  const { username } = useParams();
 
-  const [coverImg, setCoverImg] = useState(null);
-  const [profileImg, setProfileImg] = useState(null);
+  const { followUnfollowUser, isFollowLoading } = useUserStore();
+
+  const {
+    authUser,
+    profileUser,
+    fetchProfileUser,
+    updateProfileImages,
+    authLoading,
+    profileLoading,
+  } = useAuthStore();
+
+  const { posts, fetchUserPosts, fetchLikedPosts } = usePostsStore();
+
+  const isMyProfile = authUser?.username === username;
+  const user = isMyProfile ? authUser : profileUser;
+
   const [feedType, setFeedType] = useState("posts");
 
-  const [text, setText] = useState("");
-  const [img, setImg] = useState(null);
+  const [profileImg, setProfileImg] = useState(null);
+  const [coverImg, setCoverImg] = useState(null);
 
   const coverImgRef = useRef(null);
   const profileImgRef = useRef(null);
-  const imgRef = useRef(null);
-   
+
+  // 🔐 redirect
   useEffect(() => {
-    if (!isLoading && !authUser) {
-      navigate("/login");
-    }
-  }, [isLoading, authUser, navigate]);
+    if (!authLoading && !authUser) navigate("/login");
+  }, [authLoading, authUser, navigate]);
 
-  if (isLoading || !authUser) {
-    return <ProfileHeaderSkeleton />;
-  }
+  
+  useEffect(() => {
+    if (!isMyProfile && username) fetchProfileUser(username);
+  }, [username, isMyProfile, fetchProfileUser]);
 
-  const isMyProfile = true;
 
-  const handleImgChange = (e, type) => {
+  if (authLoading || profileLoading) return <ProfileHeaderSkeleton />;
+  if (!user) return <p className="text-center mt-10">User not found</p>;
+
+  const isFollowing = authUser?.following?.includes(user._id);
+
+  const handleImageChange = (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = () => {
-      if (type === "cover") setCoverImg(reader.result);
-      if (type === "profile") setProfileImg(reader.result);
+    reader.onloadend = () => {
+      type === "profile"
+        ? setProfileImg(reader.result)
+        : setCoverImg(reader.result);
     };
     reader.readAsDataURL(file);
   };
 
-  const handlePostImage = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => setImg(reader.result);
-    reader.readAsDataURL(file);
-  };
-
-  const handleCreatePost = async () => {
-    if (!text && !img) return;
-
-    await createPost({ text, img });
-
-    setText("");
-    setImg(null);
+  const saveImages = async () => {
+    await updateProfileImages({ profileImg, coverImg });
+    setProfileImg(null);
+    setCoverImg(null);
   };
 
   return (
     <div className="flex-[4_4_0] border-r border-gray-700 min-h-screen">
+      {/* HEADER */}
       <div className="flex gap-10 px-4 py-2 items-center">
-        <Link to="/">
-          <FaArrowLeft />
-        </Link>
+        <Link to="/"><FaArrowLeft /></Link>
         <div>
-          <p className="font-bold">{authUser.fullname}</p>
+          <p className="font-bold">{user.fullname}</p>
           <span className="text-sm text-slate-500">{posts.length} posts</span>
         </div>
       </div>
-      <div className="relative group">
+
+      {/* COVER */}
+      <div className="relative">
         <img
-          src={coverImg || authUser.coverImg || "/cover.png"}
+          src={coverImg || user.coverImg || "/cover.png"}
           className="h-52 w-full object-cover"
         />
 
         {isMyProfile && (
-          <button
-            className="absolute top-2 right-2 bg-gray-800 p-2 rounded-full"
-            onClick={() => coverImgRef.current.click()}
-          >
-            <MdEdit />
-          </button>
+          <>
+            <button
+              className="absolute top-2 right-2 bg-gray-800 p-2 rounded-full"
+              onClick={() => coverImgRef.current.click()}
+            >
+              <MdEdit />
+            </button>
+            <input
+              hidden
+              ref={coverImgRef}
+              type="file"
+              onChange={(e) => handleImageChange(e, "cover")}
+            />
+          </>
         )}
 
-        <input
-          type="file"
-          hidden
-          ref={coverImgRef}
-          onChange={(e) => handleImgChange(e, "cover")}
-        />
+        {/* PROFILE IMG */}
         <div className="absolute -bottom-16 left-4">
           <img
-            src={profileImg || authUser.profileImg || "/avatar-placeholder.png"}
+            src={profileImg || user.profileImg || "/avatar-placeholder.png"}
             className="w-32 rounded-full border-4 border-black"
           />
+
           {isMyProfile && (
-            <MdEdit
-              className="absolute bottom-2 right-2 cursor-pointer"
-              onClick={() => profileImgRef.current.click()}
-            />
+            <>
+              <MdEdit
+                className="absolute bottom-2 right-2 cursor-pointer"
+                onClick={() => profileImgRef.current.click()}
+              />
+              <input
+                hidden
+                ref={profileImgRef}
+                type="file"
+                onChange={(e) => handleImageChange(e, "profile")}
+              />
+            </>
           )}
-          <input
-            type="file"
-            hidden
-            ref={profileImgRef}
-            onChange={(e) => handleImgChange(e, "profile")}
-          />
         </div>
       </div>
 
+      {/* SAVE IMAGE BUTTON */}
+      {isMyProfile && (profileImg || coverImg) && (
+        <div className="px-4 mt-20">
+          <button className="btn btn-primary btn-sm" onClick={saveImages}>
+            Save image changes
+          </button>
+        </div>
+      )}
+
+      {/* ACTION BUTTON */}
       <div className="flex justify-end px-4 mt-6">
-        <EditProfileModal authUser={authUser} />
+        {isMyProfile ? (
+          <EditProfileModal authUser={authUser} />
+        ) : (
+          <button
+            className={`btn btn-sm rounded-full ${
+              isFollowing ? "btn-outline" : "btn-primary"
+            }`}
+            disabled={isFollowLoading}
+            onClick={() => followUnfollowUser(user._id)}
+          >
+            {isFollowing ? "Unfollow" : "Follow"}
+          </button>
+        )}
       </div>
 
+      {/* INFO */}
       <div className="px-4 mt-20">
-        <p className="font-bold">{authUser.fullname}</p>
-        <p className="text-slate-500">@{authUser.username}</p>
-        <p>{authUser.bio}</p>
+        <p className="font-bold">{user.fullname}</p>
+        <p className="text-slate-500">@{user.username}</p>
+        <p>{user.bio}</p>
 
         <div className="flex gap-4 mt-2 text-sm text-slate-500">
-          {authUser.link && (
-            <a href={authUser.link} target="_blank">
+          {user.link && (
+            <a href={user.link} target="_blank" rel="noreferrer">
               <FaLink /> Website
             </a>
           )}
-          <div>
-            <IoCalendarOutline /> Joined{" "}
-            {new Date(authUser.createdAt).getFullYear()}
+          <div className="flex items-center gap-1">
+            <IoCalendarOutline />
+            Joined {new Date(user.createdAt).getFullYear()}
           </div>
         </div>
 
         <div className="flex gap-4 mt-2">
-          <span>
-            <b>{authUser.following.length}</b> Following
-          </span>
-          <span>
-            <b>{authUser.followers.length}</b> Followers
-          </span>
+          <span><b>{user.following.length}</b> Following</span>
+          <span><b>{user.followers.length}</b> Followers</span>
         </div>
       </div>
-      <div className="px-4 mt-6">
-        <textarea
-          className="textarea textarea-bordered w-full"
-          placeholder="What's happening?"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
 
-        {img && (
-          <div className="relative mt-2">
-            <img src={img} className="rounded-lg max-h-60" />
-            <button
-              className="absolute top-1 right-1 btn btn-xs btn-circle"
-              onClick={() => setImg(null)}
-            >
-              ✕
-            </button>
-          </div>
-        )}
-
-        <div className="flex justify-between mt-2">
-          <input type="file" hidden ref={imgRef} onChange={handlePostImage} />
-          <button
-            className="btn btn-sm btn-outline"
-            onClick={() => imgRef.current.click()}
-          >
-            Image
-          </button>
-
-          <button
-            className="btn btn-primary btn-sm rounded-full"
-            disabled={isPending}
-            onClick={handleCreatePost}
-          >
-            {isPending ? "Posting..." : "Post"}
-          </button>
-        </div>
-      </div>
+      {/* TABS */}
       <div className="flex border-b border-gray-700 mt-4">
         <button
-          className={`flex-1 p-3 ${
-            feedType === "posts" && "border-b-4 border-primary"
-          }`}
+          className={`flex-1 p-3 ${feedType === "posts" && "border-b-4 border-primary"}`}
           onClick={() => setFeedType("posts")}
         >
           Posts
         </button>
         <button
-          className={`flex-1 p-3 ${
-            feedType === "likes" && "border-b-4 border-primary"
-          }`}
+          className={`flex-1 p-3 ${feedType === "likes" && "border-b-4 border-primary"}`}
           onClick={() => setFeedType("likes")}
         >
           Likes
         </button>
       </div>
-      <Posts feedType={feedType} username={authUser.username} posts={posts} />
+
+      <Posts feedType={feedType} username={username} posts={posts} />
     </div>
   );
 };
 
 export default ProfilePage;
+
+
+
+
+
+
+
