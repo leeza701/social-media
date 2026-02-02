@@ -213,7 +213,7 @@ import { useRef, useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import Posts from "../../components/common/Posts";
-import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton.jsx";
+import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderskeleton.jsx";
 import EditProfileModal from "./EditProfileModal.jsx"
 
 import usePostsStore from "../../store/posts.store.js";
@@ -227,7 +227,7 @@ import { MdEdit } from "react-icons/md";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { username } = userParams();
+  const { username } = useParams();
 
   const { followUnfollowUser, isFollowLoading } = useUserStore();
   const { fetchUserPosts , fetchLikedPosts} = usePostsStore();
