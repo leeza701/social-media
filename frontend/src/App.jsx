@@ -37,6 +37,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import RightPanel from "./components/common/RightPanel.jsx";
 import NotificationPage from "./pages/notification/NotificationPage.jsx";
 import ProfilePage from "./pages/profile/ProfilePage.jsx";
+import Sidebar from "./components/common/Sidebar.jsx";
 
 import useAuthStore from "./store/auth.store.js";
 import { Toaster } from "react-hot-toast";
