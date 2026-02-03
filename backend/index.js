@@ -20,12 +20,12 @@ const PORT=process.env.PORT||3000;
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
   const allowedOrigins = [
     process.env.CLIENT_API_KEY,
     process.env.CLIENT_API_KEY2
   ];
-
-  const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
@@ -41,13 +41,13 @@ app.use((req, res, next) => {
     "Content-Type, Authorization"
   );
 
-  // Handle preflight
   if (req.method === "OPTIONS") {
     return res.sendStatus(204);
   }
 
   next();
 });
+
 
 
 app.use(express.urlencoded({extended:true}));
