@@ -12,7 +12,7 @@ import useAuthStore from "../../store/auth.store";
 const Post = ({ post }) => {
   const [comment, setComment] = useState("");
   const {authUser}=useAuthStore();
-  if(!authUser || !post) return null;
+  if(!authUser || !post || !post.user) return null;
 
   const isLiked = post.likes?.some(
     (id)=>id?.toString()===authUser._id

@@ -18,7 +18,6 @@ const EditProfileModal = ({ authUser }) => {
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
-
 	useEffect(() => {
 		if (authUser) {
 			setFormData({
