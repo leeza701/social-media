@@ -27,7 +27,7 @@ const NotificationPage = () => {
       case "like":
         return "liked your post";
       case "comment":
-        return "commented on your post";
+        return "commented on post";
       default:
         return "";
     }
