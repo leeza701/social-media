@@ -37,6 +37,14 @@ const UserSchema=new mongoose.Schema({
             default:[],
         }
     ],
+    savedPosts:[
+                    {
+                    type:mongoose.Schema.Types.ObjectId,
+                    ref:"Post",
+                    default:[]
+                    }
+                ],
+                
     profileImg:{
         type:String,
         default:"", 

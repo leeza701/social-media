@@ -7,6 +7,8 @@ const usePostsStore = create((set) => ({
   isPending: false,
   error: null,
   isDeleting: false,
+  savedPosts:[],
+  savePostLoading:false,
 
   fetchPosts:async(postId)=>{
     set({isLoading:true});
@@ -122,7 +124,33 @@ fetchLikedPosts:async()=>{
     } catch (error) {
         set({isLoading:false});
     }
+  },
+
+  savePosts: async (postId) => {
+  try {
+    set({ savePostLoading: true });
+
+    const res = await axiosInstance.post(`/post/save/${postId}`);
+
+    set({
+      savedPosts: res.data.savedPosts
+    });
+    toast.success("Post saved successfully!");
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Failed to save post");
+  } finally {
+    set({ savePostLoading: false });
   }
+  },
+ getSavedPosts: async () => {
+   set({ isLoading: true });
+   try {
+     const res = await axiosInstance.get("/post/saved");
+     set({ savedPosts: res.data, isLoading: false });
+   } catch {
+     set({ isLoading: false });
+   }
+ }
 
 }));
 
