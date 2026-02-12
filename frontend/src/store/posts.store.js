@@ -126,22 +126,54 @@ fetchLikedPosts:async()=>{
     }
   },
 
+  // savePosts: async (postId) => {
+  // try {
+  //   set({ savePostLoading: true });
+
+  //   const res = await axiosInstance.post(`/post/save/${postId}`);
+
+  //   set({
+  //     savedPosts: res.data.savedPosts
+  //   });
+  //   toast.success("Post saved successfully!");
+  // } catch (error) {
+  //   toast.error(error.response?.data?.message || "Failed to save post");
+  // } finally {
+  //   set({ savePostLoading: false });
+  // }
+  // },
+
   savePosts: async (postId) => {
   try {
     set({ savePostLoading: true });
 
     const res = await axiosInstance.post(`/post/save/${postId}`);
 
-    set({
-      savedPosts: res.data.savedPosts
+    set((state) => {
+      const alreadySaved = state.savedPosts.some(
+        (post) => post._id === postId
+      );
+      if (alreadySaved) {
+        return { 
+          savedPosts: state.savedPosts.filter(
+            (post) => post._id !== postId
+          ),
+        };
+      } else {
+        return {
+          savedPosts: [...state.savedPosts, res.data],
+        }; 
+      }
     });
-    toast.success("Post saved successfully!");
   } catch (error) {
-    toast.error(error.response?.data?.message || "Failed to save post");
+    console.error(error);
   } finally {
     set({ savePostLoading: false });
   }
-  },
+},
+
+
+  
  getSavedPosts: async () => {
    set({ isLoading: true });
    try {
@@ -150,7 +182,16 @@ fetchLikedPosts:async()=>{
    } catch {
      set({ isLoading: false });
    }
- }
+ },
+ fetchSavedPosts: async () => {
+    set({ isLoading: true });
+    try {
+      const res = await axiosInstance.get("/post/saved");
+      set({ savedPosts: res.data, isLoading: false });
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
 
 }));
 

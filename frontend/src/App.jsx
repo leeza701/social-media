@@ -38,7 +38,7 @@ import RightPanel from "./components/common/RightPanel.jsx";
 import NotificationPage from "./pages/notification/NotificationPage.jsx";
 import ProfilePage from "./pages/profile/ProfilePage.jsx";
 import Sidebar from "./components/common/Sidebar.jsx";
-
+import SavePostsPage from "./pages/savePostsPage.jsx";
 import useAuthStore from "./store/auth.store.js";
 import { Toaster } from "react-hot-toast";
 
@@ -85,6 +85,9 @@ function App() {
         <Route
           path="/profile/:username"
           element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
+        />
+        <Route
+        path="/saved" element={authUser?<SavePostsPage />: <Navigate to="/login"/>}
         />
       </Routes>
 

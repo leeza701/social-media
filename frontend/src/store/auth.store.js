@@ -8,6 +8,12 @@ const useAuthStore = create((set) => ({
   isPending: false,
   profileLoading: false,
   error: null,
+
+  setAuthUser: (userData) =>
+  set({ authUser: userData }),
+
+  
+
   
    fetchProfileUser: async (username) => {
     set({profileLoading: true });

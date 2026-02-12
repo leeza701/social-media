@@ -1,6 +1,7 @@
 import {create} from 'zustand';
 import axiosInstance from '../config/axios.js';
 import toast from 'react-hot-toast';
+import useAuthStore from './auth.store.js';
 const useUserStore=create((set)=>({
    user:null,
    isLoading:true,
@@ -53,17 +54,33 @@ const useUserStore=create((set)=>({
     }
    },
 
-   updateProfile:async(profileData)=>{
-    set({isUpdatingProfile:true,error:null});
-    try {
-        const res=await axiosInstance.post("/users/update",profileData);
-        set({user:res.data,isUpdatingProfile:false});
-        toast.success("Profile updated successfully");
-    } catch (error) {
-        set({error:error.message,isUpdatingProfile:false});
-        console.log("Error updating profile:", error);
-    }
-   }
+//    updateProfile:async(profileData)=>{
+//     set({isUpdatingProfile:true,error:null});
+//     try {
+//         const res=await axiosInstance.post("/users/update",profileData);
+//         set({user:res.data,isUpdatingProfile:false});
+//         toast.success("Profile updated successfully");
+//     } catch (error) {
+//         set({error:error.message,isUpdatingProfile:false});
+//         console.log("Error updating profile:", error);
+//     }
+//    }
+
+updateProfile: async (profileData) => {
+  set({ isUpdatingProfile: true, error: null });
+  try {
+    const res = await axiosInstance.post("/users/update", profileData);
+
+    // Update auth store directly 🔥
+    useAuthStore.getState().setAuthUser(res.data);
+
+    set({ isUpdatingProfile: false });
+    toast.success("Profile updated successfully!");
+  } catch (error) {
+    set({ error: error.message, isUpdatingProfile: false });
+    toast.error("Failed to update profile");
+  }
+},
 
 
 
