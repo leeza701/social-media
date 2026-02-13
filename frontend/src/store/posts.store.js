@@ -66,6 +66,9 @@ likeOnPost: async (postId) => {
       posts: state.posts.map((post) =>
         post._id === postId ? res.data.post : post
       ),
+      savedPosts: state.savedPosts.map((post) =>
+        post._id === postId ? res.data.post : post
+      ),
       isLiking: false,
     }));
   } catch (error) {
@@ -83,6 +86,9 @@ commentOnPost: async (postId, text) => {
     set((state) => ({
       posts: state.posts.map((post) =>
         post._id === postId ? res.data : post
+      ),
+      savedPosts: state.savedPosts.map((post) =>
+        post._id === postId ? res.data.post : post
       ),
       isPending: false,
     }));

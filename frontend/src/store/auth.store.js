@@ -9,12 +9,8 @@ const useAuthStore = create((set) => ({
   profileLoading: false,
   error: null,
 
-  setAuthUser: (userData) =>
-  set({ authUser: userData }),
+  setAuthUser: (user) => set({ authUser: user }),
 
-  
-
-  
    fetchProfileUser: async (username) => {
     set({profileLoading: true });
     try {
@@ -123,6 +119,28 @@ const useAuthStore = create((set) => ({
       toast.success("Images updated");
     } catch {
       toast.error("Image upload failed");
+    }
+  },
+
+  updateProfile: async (profileData) => {
+    try {
+      set({ isUpdatingProfile: true });
+
+      const res = await axiosInstance.post("/users/update", profileData);
+      set((state) => ({
+        authUser: {
+          ...state.authUser,
+          ...res.data,
+        },
+      }));
+
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to update profile"
+      );
+    } finally {
+      set({ isUpdatingProfile: false });
     }
   },
 }));
